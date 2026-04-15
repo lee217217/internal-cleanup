@@ -21,7 +21,7 @@
         </svg>
         <div>
           <h1>Internal Image Cleanup</h1>
-          <p>Perplexity Agent 代理分析 + 內部 AI 修補工作台</p>
+          <p>Perplexity 分析 + Browser Only 修補</p>
         </div>
       </div>
       <div class="toolbar">
@@ -33,36 +33,36 @@
 
     <main id="main" class="grid">
       <aside class="panel">
-        <div class="panel-header"><h2>模式與限制</h2></div>
+        <div class="panel-header"><h2>模式說明</h2></div>
         <div class="panel-body stack">
           <div class="dropzone" id="dropzone">
             <strong>拖拉圖片到這裡</strong>
-            <p class="hint">JPG / PNG / WEBP，圖片只在你與 API 之間處理。</p>
+            <p class="hint">JPG / PNG / WEBP，修補在瀏覽器完成。</p>
           </div>
 
           <div>
-            <p class="hint" style="margin-bottom:8px;">工作模式</p>
+            <p class="hint" style="margin-bottom:8px;">目前模式</p>
             <div class="tag-row">
               <span class="tag">局部物件移除</span>
               <span class="tag">污點修復</span>
-              <span class="tag tag-soft">Perplexity 圖像分析輔助</span>
+              <span class="tag tag-soft">不需 IMAGE_EDIT_API</span>
             </div>
           </div>
 
           <div class="warn">
-            這個版本把 Perplexity 用作圖像分析與修補建議生成，不直接假設 Perplexity API 一定回傳修改後圖片；真正的像素級修補仍建議由你的內部 image-edit API 執行。
+            這個版本不再依賴 IMAGE_EDIT_API_URL。Perplexity 只做圖片分析，真正修補在瀏覽器本地完成，適合你先在 Netlify 立即上線內部使用。
           </div>
 
           <div class="checklist">
-            <label class="check"><input type="checkbox" checked> <span>檔案屬於公司內部或已獲授權修改</span></label>
-            <label class="check"><input type="checkbox" checked> <span>Netlify env 只存放伺服器端用的 API key</span></label>
-            <label class="check"><input type="checkbox" checked> <span>若 Perplexity 只回分析建議，仍會由內部修補 API 實際出圖</span></label>
+            <label class="check"><input type="checkbox" checked> <span>圖片屬於公司內部或已獲授權修改</span></label>
+            <label class="check"><input type="checkbox" checked> <span>Perplexity 只用作分析建議，不直接修改像素</span></label>
+            <label class="check"><input type="checkbox" checked> <span>實際圖片修補在瀏覽器內完成</span></label>
           </div>
 
           <div class="result-card">
             <div class="kv"><span>分析代理</span><span>Netlify Function → Perplexity</span></div>
-            <div class="kv"><span>修補代理</span><span>Netlify Function → Internal Edit API</span></div>
-            <div class="kv"><span>部署</span><span class="badge-good">靜態站 + Functions</span></div>
+            <div class="kv"><span>修補方式</span><span>Browser masked blur</span></div>
+            <div class="kv"><span>部署</span><span class="badge-good">只需 PPLX_API_KEY</span></div>
           </div>
         </div>
       </aside>
@@ -94,7 +94,7 @@
             </div>
             <div class="inline-row">
               <button class="btn btn-secondary" id="analyzeBtn">Perplexity 分析</button>
-              <button class="btn btn-primary" id="applyBtn">執行 AI 修補</button>
+              <button class="btn btn-primary" id="applyBtn">執行本地修補</button>
               <button class="btn btn-secondary" id="downloadBtn">下載結果</button>
             </div>
           </div>
@@ -113,18 +113,18 @@
       </section>
 
       <aside class="panel">
-        <div class="panel-header"><h2>部署說明</h2></div>
+        <div class="panel-header"><h2>部署設定</h2></div>
         <div class="panel-body stack">
           <ol class="steps">
-            <li><span>將整個專案上傳到 Netlify。</span></li>
-            <li><span>在 Netlify env 設定 <code>PPLX_API_KEY</code>。</span></li>
-            <li><span>如有內部修補 API，再設定 <code>IMAGE_EDIT_API_URL</code> 與 <code>IMAGE_EDIT_API_KEY</code>。</span></li>
-            <li><span>前端只呼叫 <code>/.netlify/functions/*</code>，金鑰不會暴露在瀏覽器。</span></li>
+            <li><span>上傳整個專案到 Netlify。</span></li>
+            <li><span>只需在 Netlify env 設定 <code>PPLX_API_KEY</code>。</span></li>
+            <li><span>Base directory 留空，publish 目錄為 <code>public</code>。</span></li>
+            <li><span>不用再設 <code>IMAGE_EDIT_API_URL</code> 與 <code>IMAGE_EDIT_API_KEY</code>。</span></li>
           </ol>
 
           <div class="result-card">
-            <strong>Perplexity 的角色</strong>
-            <p class="hint">Perplexity API 已支援圖像附件分析，可用 base64 data URI 送圖。[web:62][web:65] 但公開文件目前重點是圖像理解與多模態輸入，不是明確的像素級修補 API，因此這個方案把它放在分析/提示層更穩妥。[web:62][web:65][web:61]</p>
+            <strong>這版的限制</strong>
+            <p class="hint">真正修補是本地遮罩模糊法，較適合小範圍污點、遮擋、簡單標記。Perplexity 公開文件目前重點是圖像附件分析，不是穩定公開的像素級修圖 API。[web:62][web:65]</p>
           </div>
         </div>
       </aside>

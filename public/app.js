@@ -19,6 +19,7 @@
   const imgCtx = imageCanvas.getContext('2d');
   const maskCtx = maskCanvas.getContext('2d');
   let currentImage = new Image();
+  let originalImageDataUrl = '';
   let imgLoaded = false;
   let tool = 'brush';
   let drawing = false;
@@ -59,12 +60,13 @@
     });
   });
 
-  clearMaskBtn.addEventListener('click', clearMask);
-  resetBtn.addEventListener('click', () => { if (!imgLoaded) return; drawImage(); clearMask(); setStatus('已重置圖片與遮罩'); });
+  clearMaskBtn.addEventListener('click', () => { clearMask(); setStatus('已清除遮罩'); });
+  resetBtn.addEventListener('click', resetToOriginal);
 
   function loadImageFile(file) {
     const reader = new FileReader();
     reader.onload = evt => {
+      originalImageDataUrl = evt.target.result;
       const img = new Image();
       img.onload = () => {
         currentImage = img;
@@ -72,11 +74,25 @@
         fitCanvasToImage();
         drawImage();
         clearMask();
-        setStatus('圖片已載入，可先做 Perplexity 分析或直接修補');
+        setStatus('圖片已載入，可先做 Perplexity 分析或直接本地修補');
       };
-      img.src = evt.target.result;
+      img.src = originalImageDataUrl;
     };
     reader.readAsDataURL(file);
+  }
+
+  function resetToOriginal() {
+    if (!originalImageDataUrl) return;
+    const img = new Image();
+    img.onload = () => {
+      currentImage = img;
+      imgLoaded = true;
+      fitCanvasToImage();
+      drawImage();
+      clearMask();
+      setStatus('已恢復原始圖片');
+    };
+    img.src = originalImageDataUrl;
   }
 
   function fitCanvasToImage() {
@@ -178,57 +194,76 @@
     }
   }
 
-  async function applyAiEdit() {
+  function applyLocalCleanup() {
     if (!imgLoaded) return alert('請先載入圖片');
-    setStatus('AI 修補中...');
+    setStatus('本地修補中...');
     applyBtn.disabled = true;
+
     try {
-      const res = await fetch('/.netlify/functions/image-edit-proxy', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          image: imageCanvas.toDataURL('image/png'),
-          mask: maskCanvas.toDataURL('image/png'),
-          strength: parseInt(strengthInput.value, 10) || 60,
-          analysis_hint: analysisBox.textContent || ''
-        })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || '修補失敗');
-      if (!data.image) throw new Error('沒有收到修補後圖片');
+      const w = imageCanvas.width;
+      const h = imageCanvas.height;
+      const strength = parseInt(strengthInput.value, 10) || 60;
+      const blurRadius = Math.max(4, Math.round(strength / 3));
+
+      const original = imgCtx.getImageData(0, 0, w, h);
+      const mask = maskCtx.getImageData(0, 0, w, h);
+
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = w;
+      tempCanvas.height = h;
+      const tempCtx = tempCanvas.getContext('2d');
+      tempCtx.putImageData(original, 0, 0);
+      tempCtx.filter = `blur(${blurRadius}px)`;
+      tempCtx.drawImage(tempCanvas, 0, 0);
+      const blurred = tempCtx.getImageData(0, 0, w, h);
+
+      const out = imgCtx.createImageData(w, h);
+      const od = original.data;
+      const md = mask.data;
+      const bd = blurred.data;
+      const xd = out.data;
+
+      for (let i = 0; i < od.length; i += 4) {
+        const alpha = md[i + 3] / 255;
+        if (alpha > 0.05) {
+          xd[i] = bd[i];
+          xd[i + 1] = bd[i + 1];
+          xd[i + 2] = bd[i + 2];
+          xd[i + 3] = od[i + 3];
+        } else {
+          xd[i] = od[i];
+          xd[i + 1] = od[i + 1];
+          xd[i + 2] = od[i + 2];
+          xd[i + 3] = od[i + 3];
+        }
+      }
+
+      imgCtx.putImageData(out, 0, 0);
+      const resultUrl = imageCanvas.toDataURL('image/png');
       const img = new Image();
       img.onload = () => {
         currentImage = img;
-        fitCanvasToImage();
         drawImage();
         clearMask();
-        setStatus('AI 修補完成');
+        setStatus('本地修補完成，可下載結果');
       };
-      img.src = data.image;
+      img.src = resultUrl;
     } catch (err) {
       console.error(err);
-      setStatus('AI 修補失敗：' + err.message);
-      alert('AI 修補失敗，請檢查 Netlify env 與內部修補 API 設定');
+      setStatus('本地修補失敗：' + err.message);
+      alert('本地修補失敗，請查看 console');
     } finally {
       applyBtn.disabled = false;
     }
   }
 
   analyzeBtn.addEventListener('click', analyzeWithPerplexity);
-  applyBtn.addEventListener('click', applyAiEdit);
+  applyBtn.addEventListener('click', applyLocalCleanup);
   downloadBtn.addEventListener('click', () => {
     if (!imgLoaded) return;
     const link = document.createElement('a');
     link.download = 'cleaned-image.png';
     link.href = imageCanvas.toDataURL('image/png');
     link.click();
-  });
-
-  window.addEventListener('resize', () => {
-    if (!imgLoaded) return;
-    const snapshot = imageCanvas.toDataURL('image/png');
-    const img = new Image();
-    img.onload = () => { currentImage = img; fitCanvasToImage(); drawImage(); };
-    img.src = snapshot;
   });
 })();
