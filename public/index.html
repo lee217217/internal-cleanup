@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-Hant" data-theme="light">
+<html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,129 +7,149 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./style.css" />
+  <style>
+    :root,[data-theme="light"]{--bg:#f5f2ec;--surface:#fffdfa;--surface-2:#f3ede3;--border:#d9cfbf;--text:#201a15;--muted:#6d645b;--primary:#0c6c73;--primary-soft:#d6ebed;--primary-strong:#0a565c;--shadow-sm:0 4px 12px rgba(41,33,24,.06);--shadow-md:0 18px 44px rgba(41,33,24,.08);--radius:24px;--radius-sm:18px}
+    [data-theme="dark"]{--bg:#14120f;--surface:#1b1815;--surface-2:#23201b;--border:#403830;--text:#ede4d9;--muted:#b2a79b;--primary:#68aeb6;--primary-soft:#22383b;--primary-strong:#8ac8cf;--shadow-sm:0 4px 14px rgba(0,0,0,.2);--shadow-md:0 22px 52px rgba(0,0,0,.32)}
+    *{box-sizing:border-box} body{margin:0;font-family:'Inter',sans-serif;background:linear-gradient(180deg,var(--bg),var(--surface-2));color:var(--text);min-height:100vh} button,input,textarea{font:inherit}
+    .topbar{position:sticky;top:0;z-index:20;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px 24px;border-bottom:1px solid var(--border);background:color-mix(in srgb,var(--bg) 84%, transparent);backdrop-filter:blur(16px)}
+    .brand{display:flex;align-items:center;gap:14px}.mark{width:46px;height:46px;border-radius:15px;background:var(--text);color:var(--surface);display:grid;place-items:center;font-weight:800}.brand h1{margin:0;font-size:18px}.brand p{margin:4px 0 0;font-size:13px;color:var(--muted)}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.btn,.theme-btn{padding:10px 14px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;font-weight:700}.btn-primary{background:var(--primary);border-color:var(--primary);color:#fff}
+    .page{max-width:1500px;margin:0 auto;padding:24px;display:grid;gap:20px}.hero{display:grid;grid-template-columns:1.02fr .98fr;gap:20px}.card{background:color-mix(in srgb,var(--surface) 95%, transparent);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-md)}.panel{padding:24px}
+    .eyebrow{display:inline-flex;padding:8px 12px;border-radius:999px;background:var(--primary-soft);color:var(--primary-strong);font-size:12px;font-weight:800;margin-bottom:16px}h2{margin:0;font-size:clamp(28px,4vw,46px);line-height:1.06;max-width:14ch}.muted{color:var(--muted);line-height:1.7}.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}
+    .workspace{display:grid;grid-template-columns:minmax(360px,430px) minmax(0,1fr);gap:20px;align-items:start}.side-stack{display:grid;gap:20px;position:sticky;top:92px}.field{display:grid;gap:8px}.field label{font-size:13px;font-weight:700;color:var(--muted)} textarea,input[type="range"]{width:100%} textarea{min-height:120px;resize:vertical;line-height:1.7;padding:14px 16px;border-radius:18px;border:1px solid var(--border);background:var(--surface-2);color:var(--text)}
+    .drop{position:relative;min-height:190px;border:1.5px dashed color-mix(in srgb,var(--primary) 28%, var(--border));border-radius:22px;padding:18px;background:linear-gradient(180deg,var(--surface),var(--surface-2));display:flex;flex-direction:column;justify-content:space-between;gap:12px}.drop.dragover{border-color:var(--primary)}.drop input{position:absolute;inset:0;opacity:0;cursor:pointer}
+    .file-chip{display:inline-flex;padding:8px 10px;border-radius:999px;border:1px solid var(--border);background:var(--surface);font-size:12px;font-weight:700;width:max-content}.meta{display:grid;gap:8px;font-size:13px;color:var(--muted)}
+    .result-shell{padding:0;overflow:hidden;min-width:0}.result-top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;padding:22px 24px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,color-mix(in srgb,var(--surface) 88%, transparent),color-mix(in srgb,var(--surface-2) 70%, transparent))}.result-top h3{margin:0;font-size:22px}.result-top p{margin:8px 0 0;color:var(--muted);font-size:14px;line-height:1.6}
+    .result-body{display:grid;grid-template-columns:minmax(0,1fr) 340px;min-height:860px}.main-result{padding:24px;overflow:auto;background:var(--surface);min-width:0}.result-panel{padding:24px;border-left:1px solid var(--border);background:var(--surface-2);display:grid;align-content:start;gap:18px}
+    .subpanel{padding:16px;border:1px solid var(--border);border-radius:20px;background:var(--surface);box-shadow:var(--shadow-sm)}.subpanel h4{margin:0 0 10px;font-size:14px}.subpanel p{margin:0;color:var(--muted);font-size:13px;line-height:1.7}
+    .report-block{padding:16px;border:1px solid var(--border);border-radius:20px;background:var(--surface-2);margin-bottom:14px}.report-block h3{margin:0 0 12px;font-size:17px}.report-block p{margin:0;color:var(--muted);line-height:1.75}
+    .preview-stack{display:grid;gap:14px}.image-stage{position:relative;border:1px solid var(--border);border-radius:22px;overflow:hidden;background:var(--surface-2);min-height:320px;display:grid;place-items:center}.image-stage img{display:block;max-width:100%;max-height:640px;width:auto;height:auto}.image-stage canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}.result-img{width:100%;border-radius:18px;border:1px solid var(--border);background:var(--surface-2)}
+    .range-row{display:grid;gap:6px}.range-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+    .footer{font-size:12px;color:var(--muted);text-align:right}
+    @media (max-width:1100px){.hero,.workspace,.result-body{grid-template-columns:1fr}.side-stack{position:static}.result-panel{border-left:none;border-top:1px solid var(--border)}}
+    @media (max-width:760px){.page,.topbar{padding-left:16px;padding-right:16px}.topbar{align-items:flex-start;flex-direction:column}.panel,.main-result,.result-panel{padding:18px}.result-top{padding:18px}}
+  </style>
 </head>
 <body>
-  <a class="skip-link" href="#main">跳到內容</a>
-  <div class="shell">
-    <header class="topbar">
-      <div class="brand">
-        <svg class="logo" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" aria-label="Internal cleanup logo">
-          <rect x="8" y="10" width="40" height="44" rx="10"></rect>
-          <path d="M20 24h16M20 32h12M20 40h20"></path>
-          <path d="M42 42l8 8 10-18"></path>
-        </svg>
-        <div>
-          <h1>Internal Image Cleanup</h1>
-          <p>Perplexity 分析 + Browser Only 修補</p>
+  <header class="topbar">
+    <div class="brand">
+      <div class="mark">IC</div>
+      <div>
+        <h1>Internal Image Cleanup</h1>
+        <p>Upload, mask, analyze, and prepare a cleanup prompt</p>
+      </div>
+    </div>
+    <div class="toolbar">
+      <button class="theme-btn" id="themeToggle" aria-label="切換深色模式"><span id="themeIcon">🌙</span> <span id="themeText">Dark</span></button>
+      <button class="btn btn-primary" id="analyzeBtn">分析圖片</button>
+      <button class="btn" id="cleanupBtn">產生修補建議</button>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="hero">
+      <div class="card panel">
+        <div class="eyebrow">Cleanup workflow</div>
+        <h2>Upload an image, mask the problem area, and generate a clearer repair direction.</h2>
+        <p class="muted">這個介面會先用 Perplexity 分析圖片與遮罩區域，再整理出更明確的修補指令與本地預覽結果，避免只得到一般圖片描述。</p>
+        <div class="hero-actions">
+          <button class="btn btn-primary" id="analyzeBtnSecondary">分析圖片</button>
+          <button class="btn" id="cleanupBtnSecondary">產生修補建議</button>
+          <button class="btn" id="downloadBtn">下載預覽圖</button>
         </div>
       </div>
-      <div class="toolbar">
-        <button class="btn btn-secondary" id="themeToggle" aria-label="切換深淺色">深淺色</button>
-        <label class="btn btn-primary" for="fileInput">匯入圖片</label>
-        <input id="fileInput" type="file" accept="image/*" hidden />
+
+      <div class="card panel">
+        <div class="report-block">
+          <h3>系統狀態</h3>
+          <p id="actionStatus">上傳圖片後，先框選要修補的位置，再按「分析圖片」。</p>
+        </div>
+        <div class="report-block">
+          <h3>建議使用方式</h3>
+          <p>先畫出遮罩範圍，再讓系統分析「要修哪裡、哪些元素不能改、應怎樣描述修補要求」，之後再產生一個本地修補預覽。</p>
+        </div>
       </div>
-    </header>
+    </section>
 
-    <main id="main" class="grid">
-      <aside class="panel">
-        <div class="panel-header"><h2>模式說明</h2></div>
-        <div class="panel-body stack">
-          <div class="dropzone" id="dropzone">
-            <strong>拖拉圖片到這裡</strong>
-            <p class="hint">JPG / PNG / WEBP，修補在瀏覽器完成。</p>
+    <section class="workspace">
+      <aside class="side-stack">
+        <div class="card panel">
+          <div class="field">
+            <label>上傳圖片</label>
+            <label class="drop" id="dropzone">
+              <input id="fileInput" type="file" accept="image/*" />
+              <div>
+                <div class="file-chip">Image upload</div>
+                <p class="muted">Click or drag image here</p>
+              </div>
+              <div class="meta">
+                <strong id="imageName">No file selected</strong>
+                <span id="imageMeta">Size: -</span>
+              </div>
+            </label>
           </div>
+        </div>
 
-          <div>
-            <p class="hint" style="margin-bottom:8px;">目前模式</p>
-            <div class="tag-row">
-              <span class="tag">局部物件移除</span>
-              <span class="tag">污點修復</span>
-              <span class="tag tag-soft">不需 IMAGE_EDIT_API</span>
-            </div>
+        <div class="card panel">
+          <div class="field">
+            <label for="promptInput">補充要求</label>
+            <textarea id="promptInput" placeholder="例如：保留人物五官與衣服質感，只修補右上角文字區域；不要改動光線和背景色調。"></textarea>
           </div>
-
-          <div class="warn">
-            這個版本不再依賴 IMAGE_EDIT_API_URL。Perplexity 只做圖片分析，真正修補在瀏覽器本地完成，適合你先在 Netlify 立即上線內部使用。
+          <div class="range-row" style="margin-top:16px;">
+            <div class="range-meta"><span>筆刷大小</span><span id="brushSizeLabel">28px</span></div>
+            <input id="brushSize" type="range" min="8" max="80" step="1" value="28" />
           </div>
-
-          <div class="checklist">
-            <label class="check"><input type="checkbox" checked> <span>圖片屬於公司內部或已獲授權修改</span></label>
-            <label class="check"><input type="checkbox" checked> <span>Perplexity 只用作分析建議，不直接修改像素</span></label>
-            <label class="check"><input type="checkbox" checked> <span>實際圖片修補在瀏覽器內完成</span></label>
+          <div class="hero-actions" style="margin-top:16px;">
+            <button class="btn" id="resetMaskBtn">清除遮罩</button>
           </div>
+        </div>
 
-          <div class="result-card">
-            <div class="kv"><span>分析代理</span><span>Netlify Function → Perplexity</span></div>
-            <div class="kv"><span>修補方式</span><span>Browser masked blur</span></div>
-            <div class="kv"><span>部署</span><span class="badge-good">只需 PPLX_API_KEY</span></div>
+        <div class="card panel">
+          <div id="promptOut" class="report-block">
+            <h3>建議編輯指令</h3>
+            <p>尚未生成。上傳圖片並畫好遮罩後，系統會先整理一段更適合 Perplexity 的修補指令。</p>
           </div>
         </div>
       </aside>
 
-      <section class="panel">
-        <div class="panel-header"><h2>工作區</h2></div>
-        <div class="canvas-wrap">
-          <div class="workspace">
-            <div class="tools">
-              <button class="pill active" data-tool="brush">筆刷遮罩</button>
-              <button class="pill" data-tool="rect">矩形遮罩</button>
-              <button class="pill" data-action="clear-mask">清除遮罩</button>
-              <button class="pill" data-action="reset">重置圖片</button>
-            </div>
-            <div class="canvas-container">
-              <canvas id="imageCanvas"></canvas>
-              <canvas id="maskCanvas"></canvas>
+      <section class="card result-shell">
+        <div class="result-top">
+          <div>
+            <h3>Preview & analysis</h3>
+            <p>左邊是原圖與遮罩，右邊會顯示分析結果與本地預覽。</p>
+          </div>
+        </div>
+        <div class="result-body">
+          <div class="main-result">
+            <div class="preview-stack">
+              <div class="image-stage">
+                <img id="sourceImg" alt="Source preview" />
+                <canvas id="maskCanvas"></canvas>
+              </div>
+              <img id="resultImg" class="result-img" alt="Cleanup preview" />
             </div>
           </div>
-
-          <div class="controls-row">
-            <div>
-              <label class="hint" for="brushSize">筆刷大小</label>
-              <input id="brushSize" type="range" min="5" max="80" value="30" />
+          <aside class="result-panel">
+            <div id="analysisOut" class="report-block">
+              <h3>分析結果</h3>
+              <p>尚未分析。</p>
             </div>
-            <div>
-              <label class="hint" for="strength">修補強度</label>
-              <input id="strength" type="range" min="1" max="100" value="60" />
+            <div class="subpanel">
+              <h4>提示</h4>
+              <p>如果 Perplexity 只回一般圖片描述，通常代表 prompt 還不夠聚焦於「局部修補」；這版頁面會優先把分析結果導向修補區域判斷與編輯指令。</p>
             </div>
-            <div class="inline-row">
-              <button class="btn btn-secondary" id="analyzeBtn">Perplexity 分析</button>
-              <button class="btn btn-primary" id="applyBtn">執行本地修補</button>
-              <button class="btn btn-secondary" id="downloadBtn">下載結果</button>
-            </div>
-          </div>
-
-          <div class="response-grid">
-            <div class="result-card">
-              <strong>分析結果</strong>
-              <pre id="analysisBox" class="prebox">尚未分析</pre>
-            </div>
-            <div class="result-card">
-              <strong>系統狀態</strong>
-              <pre id="statusBox" class="prebox">等待上傳圖片</pre>
-            </div>
-          </div>
+          </aside>
         </div>
       </section>
+    </section>
 
-      <aside class="panel">
-        <div class="panel-header"><h2>部署設定</h2></div>
-        <div class="panel-body stack">
-          <ol class="steps">
-            <li><span>上傳整個專案到 Netlify。</span></li>
-            <li><span>只需在 Netlify env 設定 <code>PPLX_API_KEY</code>。</span></li>
-            <li><span>Base directory 留空，publish 目錄為 <code>public</code>。</span></li>
-            <li><span>不用再設 <code>IMAGE_EDIT_API_URL</code> 與 <code>IMAGE_EDIT_API_KEY</code>。</span></li>
-          </ol>
+    <div class="footer">Internal Image Cleanup Workspace</div>
+  </main>
 
-          <div class="result-card">
-            <strong>這版的限制</strong>
-            <p class="hint">真正修補是本地遮罩模糊法，較適合小範圍污點、遮擋、簡單標記。Perplexity 公開文件目前重點是圖像附件分析，不是穩定公開的像素級修圖 API。[web:62][web:65]</p>
-          </div>
-        </div>
-      </aside>
-    </main>
-  </div>
-  <script src="./app.js"></script>
+  <script>
+    document.getElementById('analyzeBtnSecondary')?.addEventListener('click', () => document.getElementById('analyzeBtn')?.click());
+    document.getElementById('cleanupBtnSecondary')?.addEventListener('click', () => document.getElementById('cleanupBtn')?.click());
+  </script>
+  <script type="module" src="./app.js"></script>
 </body>
 </html>
