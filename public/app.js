@@ -204,16 +204,19 @@ function buildAnalysisPrompt() {
   const userPrompt = (promptInput?.value || '').trim();
   const bounds = getMaskBounds();
   const areaText = bounds
-    ? `使用者已標記一個需要修補的區域，約在圖片座標 left=${bounds.left}, top=${bounds.top}, width=${bounds.width}, height=${bounds.height}。`
-    : '使用者尚未提供遮罩區域。';
+    ? `你正在分析使用者剛上傳的同一張圖片。使用者已標記一個需要修補的區域，約在圖片座標 left=${bounds.left}, top=${bounds.top}, width=${bounds.width}, height=${bounds.height}。`
+    : '你正在分析使用者剛上傳的同一張圖片，但使用者尚未提供遮罩區域。';
   return [
-    '請分析這張圖片，目標是協助後續進行局部修補，而不是只做一般描述。',
+    '這不是一般搜尋任務，也不是網頁搜尋摘要。',
+    '不要說你無法查看圖片、不能分析圖片、是文字搜尋助手，或根據搜尋結果回答。',
+    '你必須直接根據使用者上傳的圖片內容與遮罩區域進行局部修補分析。',
     areaText,
-    '請用繁體中文回覆，並嚴格輸出為以下三段：',
+    '請用繁體中文回覆，並嚴格輸出以下三段標題：',
     '1. 需要修補的區域判斷',
     '2. 保留不變的元素',
     '3. 建議的修補指令',
-    '建議的修補指令必須明確要求：保留原圖構圖、主體、光線、色調，只修補遮罩區域，避免重畫整張圖。',
+    '第三段必須是一段可直接用於圖片修補的完整指令，內容要明確要求：保留原圖構圖、主體、光線、色調，只修補遮罩區域，避免重畫整張圖。',
+    '不要加入法律建議，不要推薦其他平台，不要討論限制。',
     userPrompt ? `補充要求：${userPrompt}` : ''
   ].filter(Boolean).join('\n');
 }
@@ -234,7 +237,8 @@ async function analyzeImage() {
       body: JSON.stringify({
         image: state.sourceImageUrl,
         prompt: buildAnalysisPrompt(),
-        mode: 'cleanup-guidance'
+        mode: 'cleanup-guidance',
+        enforce_image_analysis: true
       })
     });
 
@@ -242,7 +246,15 @@ async function analyzeImage() {
     if (!response.ok) throw new Error(data?.error || '分析失敗');
 
     const answer = String(data?.result || data?.analysis || data?.content || '').trim();
+    const refusalPattern = /無法查看圖片|無法分析圖片|無法處理圖片|文字型搜尋助手|根據搜尋結果|我沒有能力分析|不能查看圖片/i;
     state.analysisText = answer;
+
+    if (refusalPattern.test(answer)) {
+      setAnalysis(`<div class="report-block"><h3>分析模式跑偏</h3><p>這次回應沒有真正針對上傳圖片進行局部修補分析，而是退回一般搜尋助手回答。請重試一次；如果仍然出現同樣內容，就需要同步調整 Netlify function 的 system prompt。</p></div><div class="report-block"><h3>原始回應</h3><p>${escapeHtml(answer)}</p></div>`);
+      setStatus('分析模式跑偏：模型沒有真正進入圖片修補分析。', 'error');
+      return;
+    }
+
     setAnalysis(`<div class="report-block"><h3>Perplexity 分析結果</h3><p>${escapeHtml(answer || '未取得分析結果。')}</p></div>`);
 
     const promptMatch = answer.match(/建議的修補指令[:：]\s*([\s\S]*)$/);
@@ -375,3 +387,5 @@ setTheme(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'l
 updatePromptSuggestion();
 updateButtons();
 setStatus('上傳圖片後，先框選要修補的位置，再按「分析圖片」。');
+
+console.log('app.js version 2026-04-16-1206 cleanup-prompt-tightened');
